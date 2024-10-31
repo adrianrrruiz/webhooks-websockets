@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chat en Tiempo Real</title>
+</head>
+<body>
+  <h2>Chat en Tiempo Real</h2>
+  <div id="chat">
+    <div id="messages"></div>
+    <input type="text" id="messageInput" placeholder="Escribe un mensaje..." />
+    <button onclick="sendMessage()">Enviar</button>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    // Muestra mensajes anteriores al cargar
+    socket.on("loadMessages", (messages) => {
+      const messagesDiv = document.getElementById("messages");
+      messages.forEach((msg) => {
+        const msgElement = document.createElement("div");
+        msgElement.textContent = msg;
+        messagesDiv.appendChild(msgElement);
+      });
+    });
+
+    // Recibe un mensaje nuevo
+    socket.on("newMessage", (msg) => {
+      const messagesDiv = document.getElementById("messages");
+      const msgElement = document.createElement("div");
+      msgElement.textContent = msg;
+      messagesDiv.appendChild(msgElement);
+    });
+
+    // Envía un mensaje nuevo
+    function sendMessage() {
+      const input = document.getElementById("messageInput");
+      const msg = input.value;
+      if (msg) {
+        socket.emit("newMessage", msg);
+        input.value = "";
+      }
+    }
+  </script>
+</body>
+</html>
